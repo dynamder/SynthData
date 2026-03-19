@@ -87,7 +87,6 @@ func (e *Executor) ExecuteBatches(ctx context.Context, batches []Batch, promptTe
 		e.wg.Add(1)
 		go func(b Batch) {
 			defer e.wg.Done()
-			e.semaphore <- struct{}{}
 
 			result := e.ExecuteBatch(ctx, b, promptTemplate)
 
@@ -107,8 +106,6 @@ func (e *Executor) ExecuteBatches(ctx context.Context, batches []Batch, promptTe
 			e.mu.Lock()
 			results = append(results, *result)
 			e.mu.Unlock()
-
-			<-e.semaphore
 		}(batch)
 	}
 

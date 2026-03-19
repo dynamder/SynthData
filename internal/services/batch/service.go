@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	synthdatalog "github.com/anomalyco/synthdata/internal"
 	"github.com/anomalyco/synthdata/internal/formatters"
 	"github.com/anomalyco/synthdata/internal/models"
 	"github.com/anomalyco/synthdata/internal/services/llm"
@@ -34,6 +35,7 @@ func NewService(client llm.Client, concurrency, maxRetries int) *Service {
 }
 
 func (s *Service) Generate(ctx context.Context, req GenerationRequest) (*GenerationSession, error) {
+	logger := synthdatalog.GetLogger()
 	if req.TargetCount <= 0 {
 		return nil, fmt.Errorf("target count must be greater than 0")
 	}
@@ -43,6 +45,12 @@ func (s *Service) Generate(ctx context.Context, req GenerationRequest) (*Generat
 	if req.Concurrency <= 0 {
 		req.Concurrency = 5
 	}
+
+	logger.Info("Starting batch generation", map[string]interface{}{
+		"target":      req.TargetCount,
+		"batch_size":  req.BatchSize,
+		"concurrency": req.Concurrency,
+	})
 
 	fmt.Printf("Starting batch generation: target=%d, batch_size=%d, concurrency=%d\n",
 		req.TargetCount, req.BatchSize, req.Concurrency)
@@ -83,6 +91,13 @@ func (s *Service) Generate(ctx context.Context, req GenerationRequest) (*Generat
 
 	session.EndTime = time.Now().UnixMilli()
 
+	logger.Info("Batch generation completed", map[string]interface{}{
+		"total_records":     session.TotalRecords,
+		"failed_records":    session.FailedRecords,
+		"recovered_records": session.RecoveredRecords,
+		"duration_ms":       session.EndTime - session.StartTime,
+	})
+
 	if err := s.writeOutput(session, req.Format, req.Output); err != nil {
 		return session, fmt.Errorf("failed to write output: %w", err)
 	}
@@ -105,14 +120,17 @@ func (s *Service) processRetries(ctx context.Context, results []BatchResult, pro
 	}
 
 	recovered := 0
+	var recoveredRecords []map[string]interface{}
 	retryQueue.Process(ctx, promptTemplate, func(record map[string]interface{}) {
 		recovered++
-		for i := range session.BatchResults {
-			session.BatchResults[i].SuccessfulRecords = append(
-				session.BatchResults[i].SuccessfulRecords, record,
-			)
-		}
+		recoveredRecords = append(recoveredRecords, record)
 	})
+
+	for i := range session.BatchResults {
+		session.BatchResults[i].SuccessfulRecords = append(
+			session.BatchResults[i].SuccessfulRecords, recoveredRecords...,
+		)
+	}
 
 	return recovered
 }
