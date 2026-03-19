@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/viper"
 )
@@ -25,6 +26,11 @@ func LoadConfig() {
 	cfg.SetConfigName("default")
 	cfg.AddConfigPath("./config")
 	cfg.AddConfigPath("$HOME/.config/synthdata")
+	cfg.AddConfigPath("$HOME/.synthdata")
+	if exePath, err := os.Executable(); err == nil {
+		cfg.AddConfigPath(filepath.Dir(exePath))
+		cfg.AddConfigPath(filepath.Dir(exePath) + "/config")
+	}
 	cfg.SetConfigType("toml")
 
 	cfg.SetDefault("llm.api_key", os.Getenv("OPENAI_API_KEY"))
@@ -34,7 +40,9 @@ func LoadConfig() {
 
 	err := cfg.ReadInConfig()
 	if err != nil {
-		_ = fmt.Errorf("config file not found, using defaults: %w", err)
+		fmt.Fprintf(os.Stderr, "Config file not found, using defaults: %v\n", err)
+	} else {
+		fmt.Fprintf(os.Stderr, "Loaded config from: %s\n", cfg.ConfigFileUsed())
 	}
 }
 
