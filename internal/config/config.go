@@ -11,7 +11,8 @@ import (
 var cfg *viper.Viper
 
 type Config struct {
-	LLM LLMConfig `mapstructure:"llm"`
+	LLM   LLMConfig   `mapstructure:"llm"`
+	Batch BatchConfig `mapstructure:"batch"`
 }
 
 type LLMConfig struct {
@@ -19,6 +20,20 @@ type LLMConfig struct {
 	BaseURL    string `mapstructure:"base_url"`
 	Model      string `mapstructure:"model"`
 	MaxRetries int    `mapstructure:"max_retries"`
+}
+
+type BatchConfig struct {
+	BatchSize   int `mapstructure:"batch_size"`
+	Concurrency int `mapstructure:"concurrency"`
+	MaxRetries  int `mapstructure:"max_retries"`
+}
+
+func (c *Config) GetBatchConfig() BatchConfig {
+	return BatchConfig{
+		BatchSize:   cfg.GetInt("batch.batch_size"),
+		Concurrency: cfg.GetInt("batch.concurrency"),
+		MaxRetries:  cfg.GetInt("batch.max_retries"),
+	}
 }
 
 func LoadConfig() {
@@ -37,6 +52,9 @@ func LoadConfig() {
 	cfg.SetDefault("llm.base_url", "https://api.openai.com/v1")
 	cfg.SetDefault("llm.model", "gpt-4o-mini")
 	cfg.SetDefault("llm.max_retries", 3)
+	cfg.SetDefault("batch.batch_size", 100)
+	cfg.SetDefault("batch.concurrency", 5)
+	cfg.SetDefault("batch.max_retries", 3)
 
 	err := cfg.ReadInConfig()
 	if err != nil {

@@ -35,4 +35,7 @@ var (
 	ErrGenerationFailed   = New("E005", "dataset generation failed")
 	ErrFileWrite          = New("E006", "failed to write output file")
 	ErrValidationFailed   = New("E007", "validation failed")
+	ErrInvalidArgs        = New("E010", "invalid command arguments")
+	ErrPartialSuccess     = New("E011", "partial success - some records failed")
+	ErrRetriesExhausted   = New("E012", "max retries exhausted for record")
 )
