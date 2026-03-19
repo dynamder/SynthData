@@ -8,7 +8,14 @@ Configuration for dataset generation.
 
 | Field | Type | Description | Validation |
 |-------|------|-------------|------------|
-| DescriptionFile | string | Path to Markdown description file | Required, must exist |
+| Description | string | Inline natural language description/prompt | Optional* |
+| DescriptionFile | string | Path to Markdown description file | Optional* |
+| OutputFormat | string | Output format (json, csv) | Required, enum: json, csv |
+| OutputPath | string | Path for output file | Required |
+| Scale | int | Number of records to generate | Required, 0-10000 |
+| Force | bool | Overwrite existing file | Default: false |
+
+*At least one of Description or DescriptionFile must be provided.
 | OutputFormat | string | Output format (json, csv) | Required, enum: json, csv |
 | OutputPath | string | Path for output file | Required |
 | Scale | int | Number of records to generate | Required, 0-10000 |
@@ -74,8 +81,9 @@ IDLE → VALIDATING → GENERATING → FORMATTING → COMPLETE
 
 ## Validation Rules
 
-1. Description file must exist and be valid Markdown
-2. Scale must be 0-10000
-3. Output format must be supported (json, csv)
-4. Output file must not exist unless --force is set
-5. LLM config must have valid API key or error message
+1. Either "description" (inline) or "description_file" (path to .md) must be provided, or both
+2. If description_file is provided, the file must exist and be valid Markdown
+3. Scale must be 0-10000
+4. Output format must be supported (json, csv)
+5. Output file must not exist unless --force is set
+6. LLM config must have valid API key or error message

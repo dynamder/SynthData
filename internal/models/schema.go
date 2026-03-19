@@ -22,9 +22,10 @@ type SchemaField struct {
 }
 
 type DescriptionFile struct {
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	Format      string      `json:"format"`
-	Count       int         `json:"count"`
-	Schema      SchemaField `json:"schema"`
+	Name            string      `json:"name"`
+	Description     string      `json:"description"`
+	DescriptionFile string      `json:"description_file"`
+	Format          string      `json:"format"`
+	Count           int         `json:"count"`
+	Schema          SchemaField `json:"schema"`
 }

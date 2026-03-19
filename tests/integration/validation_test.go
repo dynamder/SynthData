@@ -34,6 +34,22 @@ func TestValidation_Integration(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "valid description file with description_file",
+			content: `{
+				"name": "test_users",
+				"description_file": "test.md",
+				"format": "json",
+				"count": 100,
+				"schema": {
+					"name": "user",
+					"type": "string",
+					"required": true
+				}
+			}`,
+			wantErr:     true,
+			errContains: "description file not found",
+		},
+		{
 			name: "missing required name",
 			content: `{
 				"name": "",
@@ -99,6 +115,12 @@ func TestValidation_Integration(t *testing.T) {
 			wantErr:     true,
 			errContains: "parse",
 		},
+		{
+			name:        "missing both description and description_file",
+			content:     `{"name": "test", "format": "json", "count": 100, "schema": {"name": "user", "type": "string"}}`,
+			wantErr:     true,
+			errContains: "either 'description' or 'description_file' must be provided",
+		},
 	}
 
 	for _, tt := range tests {
@@ -129,7 +151,7 @@ func TestValidation_Integration(t *testing.T) {
 func TestValidation_ErrorMessages(t *testing.T) {
 	content := `{
 		"name": "",
-		"description": "",
+		"description": "Generate user data",
 		"format": "invalid",
 		"count": 0,
 		"schema": {

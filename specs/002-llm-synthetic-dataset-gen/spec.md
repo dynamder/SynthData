@@ -76,7 +76,7 @@ As a user, I want to generate datasets in various common formats, so that I can 
 
 ### Functional Requirements
 
-- **FR-001**: System MUST accept a dataset description file in Markdown format (natural language prompt for LLM)
+- **FR-001**: System MUST accept a dataset description file in JSON format. The JSON must contain either an inline "description" field with natural language prompt, OR a "description_file" field pointing to a Markdown file. At least one of these fields MUST be provided.
 - **FR-002**: System MUST support at least JSON and CSV output formats
 - **FR-003**: Users MUST be able to specify the number of records to generate via a command-line parameter
 - **FR-004**: System MUST generate data that conforms to the schema defined in the description file
@@ -92,7 +92,7 @@ As a user, I want to generate datasets in various common formats, so that I can 
 
 ### Key Entities
 
-- **Dataset Description**: A Markdown file containing natural language description/prompt that is sent directly to the LLM to generate synthetic data
+- **Dataset Description**: Either inline "description" field in JSON (natural language prompt) OR reference to a Markdown file via "description_file" field. The content is sent directly to the LLM to generate synthetic data.
 - **Output Configuration**: The combination of desired output format (JSON, CSV, etc.) and scale (number of records)
 - **Generated Dataset**: The resulting synthetic data file that conforms to the description specification
 
@@ -110,7 +110,7 @@ As a user, I want to generate datasets in various common formats, so that I can 
 ## Assumptions
 
 - The LLM is used to generate realistic synthetic data based on the schema description
-- Description file format is Markdown (natural language prompt to LLM)
+- Description can be inline in JSON ("description" field) OR in a separate Markdown file referenced by "description_file" field
 - LLM provider is configurable via TOML config (any OpenAI-compatible API: OpenAI, Anthropic, local Ollama, custom endpoints)
 - Output filename is derived from the description filename or explicitly specified by user
 - The tool is primarily CLI-based for integration into build/deploy pipelines

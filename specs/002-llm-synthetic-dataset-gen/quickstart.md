@@ -48,7 +48,55 @@ synthdata generate --description schema.md --output existing.json --force
 
 ## Description File Format
 
-Create a Markdown file with your schema description:
+You can provide the description in two ways:
+
+### Option 1: Inline JSON description
+
+Create a JSON file with inline description:
+
+```json
+{
+  "name": "User Profiles",
+  "description": "Generate user profiles with the following fields: id (integer, unique), name (string), email (string, valid format), age (integer, 18-100), country (string: US/UK/CA/AU)",
+  "format": "json",
+  "count": 100,
+  "schema": {
+    "name": "user",
+    "type": "nested",
+    "children": [
+      {"name": "id", "type": "integer"},
+      {"name": "name", "type": "string"},
+      {"name": "email", "type": "string"},
+      {"name": "age", "type": "integer"},
+      {"name": "country", "type": "string"}
+    ]
+  }
+}
+```
+
+### Option 2: Reference a Markdown file
+
+Create a JSON file referencing a Markdown description file:
+
+```json
+{
+  "name": "User Profiles",
+  "description_file": "path/to/description.md",
+  "format": "json",
+  "count": 100,
+  "schema": {
+    "name": "user",
+    "type": "nested",
+    "children": [
+      {"name": "id", "type": "integer"},
+      {"name": "name", "type": "string"},
+      {"name": "email", "type": "string"}
+    ]
+  }
+}
+```
+
+Then create your Markdown description file (`path/to/description.md`):
 
 ```markdown
 # Dataset: User Profiles
@@ -62,6 +110,8 @@ Generate user profiles with the following fields:
 - created_at: date, ISO 8601 format
 - tags: array of strings, 1-5 tags per user
 ```
+
+**Note**: You must provide either "description" or "description_file" (or both) in the JSON.
 
 ## CLI Options
 
