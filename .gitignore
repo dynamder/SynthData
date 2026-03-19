@@ -37,4 +37,10 @@ Thumbs.db
 *.log
 internal/logs/
 
+# Generated output
+examples/*.json
+
+# Temp
+nul
+
 /config
