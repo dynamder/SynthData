@@ -1,0 +1,42 @@
+{
+  "name": "sample_users",
+  "description": "Sample user dataset with various field types",
+  "format": "json",
+  "count": 5,
+  "schema": {
+    "name": "users",
+    "type": "object",
+    "required": true,
+    "children": [
+      {
+        "name": "id",
+        "type": "uuid",
+        "required": true
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "email",
+        "type": "email",
+        "required": true
+      },
+      {
+        "name": "age",
+        "type": "integer",
+        "required": false,
+        "options": {
+          "min": "18",
+          "max": "100"
+        }
+      },
+      {
+        "name": "isActive",
+        "type": "boolean",
+        "required": true
+      }
+    ]
+  }
+}

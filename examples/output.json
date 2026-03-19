@@ -1,0 +1,23 @@
+[
+  {
+    "age": 28,
+    "email": "alex.johnson@example.com",
+    "id": "123e4567-e89b-12d3-a456-426614174000",
+    "isActive": true,
+    "name": "Alex Johnson"
+  },
+  {
+    "age": 35,
+    "email": "s.lee@example.org",
+    "id": "a9b8c7d6-e5f4-4a3b-2c1d-0f9e8d7c6b5a",
+    "isActive": false,
+    "name": "Samantha Lee"
+  },
+  {
+    "age": 22,
+    "email": "m.chen@example.net",
+    "id": "f0e1d2c3-b4a5-8697-7876-554433221100",
+    "isActive": true,
+    "name": "Marcus Chen"
+  }
+]

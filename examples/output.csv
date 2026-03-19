@@ -1,0 +1,4 @@
+id,name,email,age,isActive
+a1b2c3d4-e5f6-7890-abcd-ef1234567890,Alex Johnson,alex.johnson@example.com,28,true
+b2c3d4e5-f6a7-8901-bcde-f23456789012,Maria Garcia,maria.garcia@example.com,35,false
+c3d4e5f6-a7b8-9012-cdef-345678901234,David Smith,david.smith@example.com,,true

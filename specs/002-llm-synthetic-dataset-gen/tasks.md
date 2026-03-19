@@ -24,12 +24,12 @@ description: "Task list for Synthetic Dataset Generation Tool"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Initialize Go module in repository root with go mod init
-- [ ] T002 [P] Install Cobra CLI: go install github.com/spf13/cobra-cli@latest
-- [ ] T003 [P] Initialize Cobra project structure using cobra-cli
-- [ ] T004 Add dependencies: go get github.com/spf13/cobra github.com/spf13/viper github.com/sashabaranov/go-openai github.com/stretchr/testify
-- [ ] T005 Create project directory structure per plan.md: cmd/, internal/, config/, tests/
-- [ ] T006 Configure Go formatting (gofmt) and linting
+- [X] T001 Initialize Go module in repository root with go mod init
+- [X] T002 [P] Install Cobra CLI: go install github.com/spf13/cobra-cli@latest
+- [X] T003 [P] Initialize Cobra project structure using cobra-cli
+- [X] T004 Add dependencies: go get github.com/spf13/cobra github.com/spf13/viper github.com/sashabaranov/go-openai github.com/stretchr/testify
+- [X] T005 Create project directory structure per plan.md: cmd/, internal/, config/, tests/
+- [X] T006 Configure Go formatting (gofmt) and linting
 
 ---
 
@@ -39,13 +39,13 @@ description: "Task list for Synthetic Dataset Generation Tool"
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T007 Create LLM configuration struct in internal/models/config.go
-- [ ] T008 [P] Create dataset configuration struct in internal/models/dataset.go
-- [ ] T009 [P] Implement Viper config loading in internal/config/config.go
-- [ ] T010 Implement LLM client wrapper in internal/services/llm/client.go
-- [ ] T010a [P] Define LLM client interface for abstraction in internal/services/llm/interface.go
-- [ ] T011 Create schema parsing types in internal/models/schema.go
-- [ ] T012 Setup error types and handling in internal/errors/errors.go
+- [X] T007 Create LLM configuration struct in internal/models/config.go
+- [X] T008 [P] Create dataset configuration struct in internal/models/dataset.go
+- [X] T009 [P] Implement Viper config loading in internal/config/config.go
+- [X] T010 Implement LLM client wrapper in internal/services/llm/client.go
+- [X] T010a [P] Define LLM client interface for abstraction in internal/services/llm/interface.go
+- [X] T011 Create schema parsing types in internal/models/schema.go
+- [X] T012 Setup error types and handling in internal/errors/errors.go
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -68,14 +68,14 @@ description: "Task list for Synthetic Dataset Generation Tool"
 
 ### Implementation for User Story 1
 
-- [ ] T017 [P] [US1] Implement JSON formatter in internal/formatters/json.go
-- [ ] T018 [P] [US1] Implement CSV formatter in internal/formatters/csv.go
-- [ ] T018a [P] [US1] Implement nested JSON structure handling in internal/formatters/json.go
-- [ ] T019 [US1] Implement dataset generator service in internal/services/generator/generator.go
-- [ ] T020 [US1] Create generate command in cmd/generate.go with Cobra
-- [ ] T021 [US1] Implement file output handling with --force flag logic
-- [ ] T022 [US1] Add CLI flags: --description, --output, --format, --scale, --config, --force
-- [ ] T023 [US1] Wire up LLM client to generator, generator to formatter, formatter to CLI
+- [X] T017 [P] [US1] Implement JSON formatter in internal/formatters/json.go
+- [X] T018 [P] [US1] Implement CSV formatter in internal/formatters/csv.go
+- [X] T018a [P] [US1] Implement nested JSON structure handling in internal/formatters/json.go
+- [X] T019 [US1] Implement dataset generator service in internal/services/generator/generator.go
+- [X] T020 [US1] Create generate command in cmd/synthdata/main.go with Cobra
+- [X] T021 [US1] Implement file output handling with --force flag logic
+- [X] T022 [US1] Add CLI flags: --description, --output, --format, --scale, --config, --force
+- [X] T023 [US1] Wire up LLM client to generator, generator to formatter, formatter to CLI
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
