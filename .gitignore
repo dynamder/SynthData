@@ -35,5 +35,6 @@ Thumbs.db
 
 # Logs
 *.log
+internal/logs/
 
 /config
