@@ -59,12 +59,12 @@ description: "Task list for Synthetic Dataset Generation Tool"
 
 ### Tests for User Story 1 (REQUIRED per spec.md)
 
-- [ ] T013 [P] [US1] Unit test for JSON formatter in tests/unit/formatter_json_test.go
-- [ ] T014 [P] [US1] Unit test for CSV formatter in tests/unit/formatter_csv_test.go
-- [ ] T015 [US1] Integration test: generate JSON dataset in tests/integration/generate_json_test.go
-- [ ] T016 [US1] Integration test: generate CSV dataset in tests/integration/generate_csv_test.go
-- [ ] T016a [P] [US1] Unit test for LLM client in tests/unit/llm_client_test.go
-- [ ] T016b [P] [US1] Unit test for generator service in tests/unit/generator_test.go
+- [X] T013 [P] [US1] Unit test for JSON formatter in tests/unit/formatter_json_test.go
+- [X] T014 [P] [US1] Unit test for CSV formatter in tests/unit/formatter_csv_test.go
+- [X] T015 [US1] Integration test: generate JSON dataset in tests/integration/generate_json_test.go
+- [X] T016 [US1] Integration test: generate CSV dataset in tests/integration/generate_csv_test.go
+- [X] T016a [P] [US1] Unit test for LLM client in tests/unit/llm_client_test.go
+- [X] T016b [P] [US1] Unit test for generator service in tests/unit/generator_test.go
 
 ### Implementation for User Story 1
 
