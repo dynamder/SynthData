@@ -1,0 +1,22 @@
+{
+  "name": "Bilibili Chat Dataset",
+  "description_file": "description.md",
+  "format": "json",
+  "count": 100,
+  "schema": {
+    "name": "bilibili_chat",
+    "type": "nested",
+    "children": [
+      {"name": "id", "type": "integer"},
+      {"name": "blog", "type": "nested", "children": [
+        {"name": "post_user", "type": "string"},
+        {"name": "post_content", "type": "string"}
+      ]},
+      {"name": "comments", "type": "nested", "children": [
+        {"name": "from", "type": "string"},
+        {"name": "comment_content", "type": "string"},
+        {"name": "comments", "type": "nested", "children": []}
+      ]}
+    ]
+  }
+}
