@@ -134,13 +134,13 @@ description: "Task list for Synthetic Dataset Generation Tool"
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T039 Add TOML config file support with defaults
-- [ ] T040 [P] Update quickstart.md with accurate usage examples
-- [ ] T041 Add environment variable support (OPENAI_API_KEY, etc.)
-- [ ] T042 Run full test suite and fix any failures
-- [ ] T043 Validate against success criteria: SC-001 through SC-006
-- [ ] T043a Performance test: generate 1000 records in under 30s in tests/performance/benchmark_test.go
-- [ ] T043b Scale test: generate 10k records without crash in tests/performance/scale_test.go
+- [X] T039 Add TOML config file support with defaults
+- [X] T040 [P] Update quickstart.md with accurate usage examples
+- [X] T041 Add environment variable support (OPENAI_API_KEY, etc.)
+- [X] T042 Run full test suite and fix any failures
+- [X] T043 Validate against success criteria: SC-001 through SC-006
+- [X] T043a Performance test: generate 1000 records in under 30s in tests/performance/benchmark_test.go
+- [X] T043b Scale test: generate 10k records without crash in tests/performance/scale_test.go
 
 ---
 
