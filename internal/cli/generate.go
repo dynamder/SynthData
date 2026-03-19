@@ -1,14 +1,14 @@
 package cli
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
 	"github.com/anomalyco/synthdata/internal/config"
-	"github.com/anomalyco/synthdata/internal/models"
 	"github.com/anomalyco/synthdata/internal/services/generator"
 	"github.com/anomalyco/synthdata/internal/services/llm"
+	"github.com/anomalyco/synthdata/internal/services/parser"
+	"github.com/anomalyco/synthdata/internal/services/validator"
 	"github.com/spf13/cobra"
 )
 
@@ -48,14 +48,13 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	descData, err := os.ReadFile(descriptionFile)
+	descFile, err := parser.ParseDescriptionFile(descriptionFile)
 	if err != nil {
-		return fmt.Errorf("failed to read description file: %w", err)
+		return fmt.Errorf("validation error: %w", err)
 	}
 
-	var descFile models.DescriptionFile
-	if err := json.Unmarshal(descData, &descFile); err != nil {
-		return fmt.Errorf("failed to parse description file: %w", err)
+	if err := validator.ValidateDescription(descFile); err != nil {
+		return fmt.Errorf("validation error: %w", err)
 	}
 
 	if scale > 0 {
@@ -75,7 +74,7 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	}
 
 	gen := generator.New(client)
-	records, err := gen.Generate(&descFile)
+	records, err := gen.Generate(descFile)
 	if err != nil {
 		return fmt.Errorf("generation failed: %w", err)
 	}

@@ -89,19 +89,19 @@ description: "Task list for Synthetic Dataset Generation Tool"
 
 ### Tests for User Story 2 (REQUIRED per spec.md)
 
-- [ ] T024 [P] [US2] Unit test: invalid syntax detection in tests/unit/validator_test.go
-- [ ] T025 [P] [US2] Unit test: missing required fields detection in tests/unit/validator_test.go
-- [ ] T026 [US2] Integration test: validation error messages in tests/integration/validation_test.go
+- [X] T024 [P] [US2] Unit test: invalid syntax detection in tests/unit/validator_test.go
+- [X] T025 [P] [US2] Unit test: missing required fields detection in tests/unit/validator_test.go
+- [X] T026 [US2] Integration test: validation error messages in tests/integration/validation_test.go
 
 ### Implementation for User Story 2
 
-- [ ] T027 [P] [US2] Implement description file parser in internal/services/parser/parser.go
-- [ ] T028 [P] [US2] Implement schema validator in internal/services/validator/validator.go
-- [ ] T029 [US2] Add validation step before generation in generate command
-- [ ] T030 [US2] Implement structured error messages with field/line info
-- [ ] T031 [US2] Integrate validation into CLI flow
-- [ ] T031a [US2] Implement schema conformance validator in internal/services/validator/conformance.go
-- [ ] T031b [US2] Test schema conformance (95% threshold) in tests/unit/conformance_test.go
+- [X] T027 [P] [US2] Implement description file parser in internal/services/parser/parser.go
+- [X] T028 [P] [US2] Implement schema validator in internal/services/validator/validator.go
+- [X] T029 [US2] Add validation step before generation in generate command
+- [X] T030 [US2] Implement structured error messages with field/line info
+- [X] T031 [US2] Integrate validation into CLI flow
+- [X] T031a [US2] Implement schema conformance validator in internal/services/validator/conformance.go
+- [X] T031b [US2] Test schema conformance (95% threshold) in tests/unit/conformance_test.go
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -115,16 +115,16 @@ description: "Task list for Synthetic Dataset Generation Tool"
 
 ### Tests for User Story 3 (REQUIRED per spec.md)
 
-- [ ] T032 [P] [US3] Test: unsupported format error in tests/unit/formatter_test.go
-- [ ] T033 [P] [US3] Test: JSON parse validation in tests/unit/formatter_test.go
-- [ ] T034 [P] [US3] Test: CSV parse validation in tests/unit/formatter_test.go
+- [X] T032 [P] [US3] Test: unsupported format error in tests/unit/formatter_test.go
+- [X] T033 [P] [US3] Test: JSON parse validation in tests/unit/formatter_test.go
+- [X] T034 [P] [US3] Test: CSV parse validation in tests/unit/formatter_test.go
 
 ### Implementation for User Story 3
 
-- [ ] T035 [P] [US3] Add format detection and validation in formatters
-- [ ] T036 [P] [US3] Implement error for unsupported formats
-- [ ] T037 [US3] Ensure generated JSON is parseable by standard JSON parsers
-- [ ] T038 [US3] Ensure generated CSV has correct headers and delimiters
+- [X] T035 [P] [US3] Add format detection and validation in formatters
+- [X] T036 [P] [US3] Implement error for unsupported formats
+- [X] T037 [US3] Ensure generated JSON is parseable by standard JSON parsers
+- [X] T038 [US3] Ensure generated CSV has correct headers and delimiters
 
 **Checkpoint**: All user stories should now be independently functional
 
