@@ -96,9 +96,12 @@ Users should be able to configure the maximum number of parallel LLM calls to av
 - **FR-010**: System MUST stop and return results when target scale is reached, even if mid-batch
 - **FR-011**: System MUST detect rate limit errors and retry with exponential backoff
 - **FR-012**: System MUST display progress information in the terminal during generation
+- **FR-012a**: System MUST display phase summaries every 5 batches and at completion with elapsed time, average time per batch, and ETA
+- **FR-012b**: System MUST display detailed summary at completion showing total records, success/failed batches, failed records count, recovered count, output file path, and elapsed time
 - **FR-013**: System MUST output error messages to both command line and log file
 - **FR-014**: System MUST mark errors as recovered in both terminal and log file when retries succeed
 - **FR-015**: System MUST store logs in JSON Lines format in the logs/ directory
+- **FR-016**: System MUST support a --verbose flag to enable detailed logging output
 
 ### Key Entities *(include if feature involves data)*
 
