@@ -1,4 +1,4 @@
-module github.com/anomalyco/synthdata
+module github.com/dynamder/synthdata
 
 go 1.26.1
 

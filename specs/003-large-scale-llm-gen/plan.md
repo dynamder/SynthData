@@ -72,24 +72,31 @@ specs/[###-feature]/
 ### Source Code (repository root)
 
 ```text
-src/
-├── cmd/synthdata/         # CLI entry point
-├── internal/
-│   ├── cli/               # CLI commands
-│   ├── config/            # Configuration
-│   ├── errors/            # Error types
-│   ├── formatters/        # JSON/CSV formatters
-│   ├── models/            # Data models
-│   └── services/
-│       ├── generator/     # Existing single-call generator
-│       ├── llm/           # LLM client interface
-│       ├── parser/        # Description file parser
-│       ├── validator/     # Schema validator
-│       └── batch/         # NEW: Batch processing service
-└── tests/
-    ├── unit/              # Unit tests
-    ├── integration/       # Integration tests
-    └── performance/       # Performance tests
+github.com/anomalyco/synthdata/
+├── go.mod                 # Go module definition
+├── src/                   # Source code (following Go convention)
+│   ├── cmd/synthdata/     # CLI entry point
+│   ├── internal/
+│   │   ├── cli/           # CLI commands
+│   │   ├── config/        # Configuration
+│   │   ├── errors/        # Error types
+│   │   ├── formatters/    # JSON/CSV formatters
+│   │   ├── logger.go      # Logging utilities
+│   │   ├── models/        # Data models
+│   │   └── services/
+│   │       ├── generator/ # Existing single-call generator
+│   │       ├── llm/       # LLM client interface
+│   │       ├── parser/    # Description file parser
+│   │       ├── validator/ # Schema validator
+│   │       └── batch/     # Batch processing service
+│   ├── config/            # Configuration files
+│   └── tests/
+│       ├── unit/          # Unit tests
+│       ├── integration/   # Integration tests
+│       └── performance/   # Performance tests
+├── specs/                 # Feature specifications
+├── examples/             # Example output files
+└── bin/                   # Compiled binaries
 ```
 
 **Structure Decision**: Single Go project with CLI. New batch service will be added under `internal/services/batch/` to handle large-scale generation with semaphore-controlled concurrency.

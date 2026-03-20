@@ -1,6 +1,0 @@
-{"timestamp":"2026-03-19T18:35:27Z","level":"INFO","message":"Starting batch generation","context":{"batch_size":100,"concurrency":5,"target":100}}
-[INFO] Starting batch generation
-{"timestamp":"2026-03-19T18:35:27Z","level":"INFO","message":"Starting batch generation","context":{"batch_size":10,"concurrency":5,"target":100}}
-[INFO] Starting batch generation
-{"timestamp":"2026-03-19T18:35:27Z","level":"INFO","message":"Starting batch generation","context":{"batch_size":100,"concurrency":5,"target":10}}
-[INFO] Starting batch generation
