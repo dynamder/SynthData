@@ -22,6 +22,10 @@ func (m *mockLLMClient) Generate(prompt string) (string, error) {
 	return m.response, nil
 }
 
+func (m *mockLLMClient) GenerateWithBatchSize(prompt string, batchSize int) (string, error) {
+	return m.Generate(prompt)
+}
+
 func TestLLMClientInterface(t *testing.T) {
 	var _ llm.Client = &mockLLMClient{}
 }

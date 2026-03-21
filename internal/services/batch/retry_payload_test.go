@@ -58,6 +58,7 @@ func TestBuildRetryPayload_MultipleRetries(t *testing.T) {
 	failed := FailedRecord{
 		OriginalOutput: `{"id": 1}`,
 		RetryCount:     2,
+		Error:          llm.NewLLmCallError(llm.InvalidFormat, nil),
 	}
 
 	prompt := "Generate records"
@@ -78,6 +79,7 @@ func TestRetryPayloadBuilder_EmptyOriginalOutput(t *testing.T) {
 	failed := FailedRecord{
 		OriginalOutput: "",
 		RetryCount:     0,
+		Error:          llm.NewLLmCallError(llm.InvalidFormat, nil),
 	}
 
 	result := builder.Build(failed, "test prompt")

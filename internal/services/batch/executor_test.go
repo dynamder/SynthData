@@ -14,6 +14,10 @@ func (m *mockClient) Generate(prompt string) (string, error) {
 	return m.generateFunc(prompt)
 }
 
+func (m *mockClient) GenerateWithBatchSize(prompt string, batchSize int) (string, error) {
+	return m.generateFunc(prompt)
+}
+
 func TestExecutor_NewExecutor(t *testing.T) {
 	client := &mockClient{generateFunc: func(p string) (string, error) { return "[]", nil }}
 

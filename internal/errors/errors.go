@@ -10,9 +10,9 @@ type SynthdataError struct {
 
 func (e *SynthdataError) Error() string {
 	if e.Cause != nil {
-		return fmt.Sprintf("%d: %s (caused by: %v)", e.Code, e.Message, e.Cause)
+		return fmt.Sprintf("E%03d: %s (caused by: %v)", e.Code, e.Message, e.Cause)
 	}
-	return fmt.Sprintf("%d: %s", e.Code, e.Message)
+	return fmt.Sprintf("E%03d: %s", e.Code, e.Message)
 }
 
 func (e *SynthdataError) Unwrap() error {

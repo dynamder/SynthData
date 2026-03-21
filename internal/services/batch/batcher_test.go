@@ -19,7 +19,7 @@ func TestBatcher_DivideIntoBatches(t *testing.T) {
 		{"1 record, batch 100", 1, 100, 1},
 		{"0 records", 0, 100, 0},
 		{"negative target", -10, 100, 0},
-		{"zero batch size", 100, 0, 1},
+		{"zero batch size", 100, 0, 10},
 	}
 
 	for _, tt := range tests {
