@@ -149,10 +149,16 @@ func (s *Service) processRetries(ctx context.Context, results []BatchResult, ori
 
 	recovered := 0
 	var recoveredRecords []map[string]interface{}
-	retryQueue.Process(ctx, originalPrompt, func(record map[string]interface{}) {
+
+	retryProgressChan := make(chan RetryProgressUpdate, 10)
+	go s.printRetryProgress(retryProgressChan, session)
+
+	recovered, _ = retryQueue.Process(ctx, originalPrompt, func(record map[string]interface{}) {
 		recovered++
 		recoveredRecords = append(recoveredRecords, record)
-	})
+	}, retryProgressChan)
+
+	close(retryProgressChan)
 
 	for i := range session.BatchResults {
 		if len(session.BatchResults[i].FailedRecords) > 0 && len(recoveredRecords) > 0 {
@@ -213,6 +219,30 @@ func (s *Service) printProgress(progressChan chan ProgressUpdate, session *Gener
 				elapsed.Round(time.Second),
 				totalRecords, session.Request.TargetCount,
 				cumulativeSuccess, cumulativeFailed)
+		}
+	}
+}
+
+func (s *Service) printRetryProgress(progressChan chan RetryProgressUpdate, session *GenerationSession) {
+	for update := range progressChan {
+		elapsed := time.Duration(update.DurationMs) * time.Millisecond
+		percent := float64(update.Completed) / float64(update.Total) * 100
+
+		avgTimePerBatch := float64(update.DurationMs) / float64(update.Completed)
+		etaSeconds := avgTimePerBatch * float64(update.Total-update.Completed) / 1000
+
+		if update.Completed > 1 && (update.Completed%3 == 0 || update.Completed == update.Total) {
+			fmt.Printf("\n[Retry Progress] Retry %d/%d (%.1f%%) | Elapsed: %s | Avg: %.1fs/retry | ETA: %.1fs | Recovered: %d | Still Failed: %d",
+				update.Completed, update.Total, percent,
+				elapsed.Round(time.Second),
+				avgTimePerBatch/1000,
+				etaSeconds,
+				update.Recovered, update.Failed)
+		} else if update.Completed == 1 {
+			fmt.Printf("\n[Retry Progress] Retry %d/%d (%.1f%%) | Elapsed: %s | Recovered: %d | Still Failed: %d",
+				update.Completed, update.Total, percent,
+				elapsed.Round(time.Second),
+				update.Recovered, update.Failed)
 		}
 	}
 }

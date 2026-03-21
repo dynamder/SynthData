@@ -9,6 +9,14 @@ import (
 	"github.com/dynamder/synthdata/internal/services/llm"
 )
 
+type RetryProgressUpdate struct {
+	Completed  int
+	Total      int
+	Recovered  int
+	Failed     int
+	DurationMs int64
+}
+
 type RetryQueue struct {
 	client     llm.Client
 	maxRetries int
@@ -31,19 +39,29 @@ func (r *RetryQueue) Add(failed FailedRecord) {
 	r.queue = append(r.queue, failed)
 }
 
-func (r *RetryQueue) Process(ctx context.Context, originalPrompt string, onRecovered func(map[string]interface{})) (int, error) {
+func (r *RetryQueue) Process(ctx context.Context, originalPrompt string, onRecovered func(map[string]interface{}), progressChan chan<- RetryProgressUpdate) (int, error) {
 	recovered := 0
 	stillFailed := make([]FailedRecord, 0)
+	totalFailed := r.FailedCount()
 
 	synthdatalog.GetLogger().Info(
-		fmt.Sprintf("Retry with max times %d for %d failed batches.", r.maxRetries, r.FailedCount()),
+		fmt.Sprintf("Retry with max times %d for %d failed batches.", r.maxRetries, totalFailed),
 		map[string]interface{}{
 			"originalPrompt": originalPrompt,
 		},
 	)
-	fmt.Printf("[Retry] Retry with max times %d for %d failed batches.\n", r.maxRetries, r.FailedCount())
+	fmt.Printf("[Retry] Retry with max times %d for %d failed batches.\n", r.maxRetries, totalFailed)
 
-	for _, failed := range r.queue {
+	startTime := time.Now()
+
+	for i, failed := range r.queue {
+		select {
+		case <-ctx.Done():
+			r.queue = stillFailed
+			return recovered, ctx.Err()
+		default:
+		}
+
 		if failed.RetryCount >= r.maxRetries {
 			stillFailed = append(stillFailed, failed)
 			continue
@@ -53,15 +71,34 @@ func (r *RetryQueue) Process(ctx context.Context, originalPrompt string, onRecov
 		retryPayload := BuildRetryPayload(failed, originalPrompt)
 
 		var sleepDuration time.Duration
+		retrySuccess := false
 		for attempt := 0; attempt < 3; attempt++ {
 			select {
 			case <-ctx.Done():
+				r.queue = stillFailed
 				return recovered, ctx.Err()
 			default:
 			}
 
-			response, err := r.client.Generate(retryPayload)
+			response, err := r.client.GenerateWithBatchSize(retryPayload, failed.RecordCount)
 			if err != nil {
+				var errorDetail string
+				if llmErr, ok := err.(*llm.LLMCallError); ok {
+					if llmErr.Detail != nil {
+						errorDetail = fmt.Sprintf("%s: %v", llmErr.Message(), llmErr.Detail)
+					} else {
+						errorDetail = llmErr.Message()
+					}
+				} else {
+					errorDetail = err.Error()
+				}
+				synthdatalog.GetLogger().Error("Retry attempt failed", map[string]interface{}{
+					"batch_id":    failed.BatchID,
+					"retry_count": failed.RetryCount,
+					"attempt":     attempt + 1,
+					"error":       errorDetail,
+					"payload":     retryPayload,
+				})
 				sleepDuration = exponentialBackoff(attempt)
 				time.Sleep(sleepDuration)
 				continue
@@ -69,6 +106,14 @@ func (r *RetryQueue) Process(ctx context.Context, originalPrompt string, onRecov
 
 			records, err := parseRecords(response)
 			if err != nil || len(records) == 0 {
+				synthdatalog.GetLogger().Error("Retry parse failed", map[string]interface{}{
+					"batch_id":      failed.BatchID,
+					"retry_count":   failed.RetryCount,
+					"attempt":       attempt + 1,
+					"parse_error":   err.Error(),
+					"raw_response":  response,
+					"cleaned_input": cleanJSONResponse(response),
+				})
 				sleepDuration = exponentialBackoff(attempt)
 				time.Sleep(sleepDuration)
 				continue
@@ -78,11 +123,33 @@ func (r *RetryQueue) Process(ctx context.Context, originalPrompt string, onRecov
 				onRecovered(record)
 			}
 			recovered++
+			retrySuccess = true
 			break
+		}
+
+		if !retrySuccess {
+			synthdatalog.GetLogger().Error("Retry exhausted, batch failed permanently", map[string]interface{}{
+				"batch_id":     failed.BatchID,
+				"retry_count":  failed.RetryCount,
+				"max_retries":  r.maxRetries,
+				"original_err": failed.Error.Error(),
+				"payload":      retryPayload,
+			})
 		}
 
 		if failed.RetryCount < r.maxRetries {
 			stillFailed = append(stillFailed, failed)
+		}
+
+		if progressChan != nil {
+			elapsed := time.Since(startTime)
+			progressChan <- RetryProgressUpdate{
+				Completed:  i + 1,
+				Total:      totalFailed,
+				Recovered:  recovered,
+				Failed:     len(stillFailed),
+				DurationMs: elapsed.Milliseconds(),
+			}
 		}
 	}
 

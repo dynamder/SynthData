@@ -45,40 +45,45 @@ func (e *Executor) ExecuteBatch(ctx context.Context, batch Batch, promptTemplate
 	}()
 
 	prompt := fmt.Sprintf(promptTemplate, batch.Size)
-	response, err := e.client.Generate(prompt)
+	response, err := e.client.GenerateWithBatchSize(prompt, batch.Size)
 	result.LLMCallCount = 1
 
 	logger := synthdatalog.GetLogger()
 
 	if err != nil {
-		logger.Error("LLM call failed", map[string]interface{}{
-			"batch_id":   result.BatchID,
-			"batch_size": batch.Size,
-			"error":      err.Error(),
-			"prompt":     prompt,
-			"response":   response,
-		})
+		var errorDetail string
 		if llmErr, ok := errors.AsType[*llm.LLMCallError](err); ok {
+			if llmErr.Detail != nil {
+				errorDetail = fmt.Sprintf("%s: %v", llmErr.Message(), llmErr.Detail)
+			} else {
+				errorDetail = llmErr.Message()
+			}
+			logger.Error("LLM call failed", map[string]interface{}{
+				"batch_id":     result.BatchID,
+				"batch_size":   batch.Size,
+				"error_code":   llmErr.ErrorCode,
+				"error_detail": errorDetail,
+				"prompt":       prompt,
+				"response":     response,
+			})
 			result.FailedRecords = append(result.FailedRecords, FailedRecord{
 				OriginalOutput: response,
-				Error:          llmErr, //if err return from client, it must be this type
+				Error:          llmErr,
 				RetryCount:     0,
 				BatchID:        result.BatchID,
 				RecordCount:    batch.Size,
 			})
 		} else {
-			logger.Error(
-				fmt.Errorf("Unknown LLM generation failure: %w", err).Error(),
-				map[string]interface{}{
-					"batch_id":   result.BatchID,
-					"batch_size": batch.Size,
-					"error":      err.Error(),
-					"response":   response,
-				},
-			) //TODO: check if it is right.
+			logger.Error("LLM call failed", map[string]interface{}{
+				"batch_id":   result.BatchID,
+				"batch_size": batch.Size,
+				"error":      err.Error(),
+				"prompt":     prompt,
+				"response":   response,
+			})
 			result.FailedRecords = append(result.FailedRecords, FailedRecord{
 				OriginalOutput: response,
-				Error:          llm.NewLLmCallError(llm.Unknown, err), //if err return from client, it must be this type
+				Error:          llm.NewLLmCallError(llm.Unknown, err),
 				RetryCount:     0,
 				BatchID:        result.BatchID,
 				RecordCount:    batch.Size,
@@ -92,10 +97,11 @@ func (e *Executor) ExecuteBatch(ctx context.Context, batch Batch, promptTemplate
 	records, err := parseRecords(response)
 	if err != nil {
 		logger.Error("Failed to parse LLM response", map[string]interface{}{
-			"batch_id":   result.BatchID,
-			"batch_size": batch.Size,
-			"error":      err.Error(),
-			"response":   response,
+			"batch_id":      result.BatchID,
+			"batch_size":    batch.Size,
+			"parse_error":   err.Error(),
+			"raw_response":  response,
+			"cleaned_input": cleanJSONResponse(response),
 		})
 		result.FailedRecords = append(result.FailedRecords, FailedRecord{
 			OriginalOutput: response,

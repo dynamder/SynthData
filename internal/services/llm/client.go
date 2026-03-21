@@ -40,6 +40,10 @@ type LLMCallError struct {
 func (error *LLMCallError) Error() string {
 	return fmt.Sprintf("LLM Call failed: %s", errorCodeMap[error.ErrorCode])
 }
+
+func (error *LLMCallError) Message() string {
+	return errorCodeMap[error.ErrorCode]
+}
 func NewLLmCallError(code int, detail error) *LLMCallError {
 	return &LLMCallError{ErrorCode: code, Detail: detail}
 }
@@ -55,7 +59,7 @@ func NewOpenAIClientWithConfig(apiKey, baseURL, model string) *OpenAIClient {
 		cfg.BaseURL = baseURL
 	}
 	cfg.HTTPClient = &http.Client{
-		Timeout: 120 * time.Second,
+		Timeout: 240 * time.Second,
 	}
 	client := openai.NewClientWithConfig(cfg)
 	if model == "" {
@@ -68,8 +72,21 @@ func NewOpenAIClientWithConfig(apiKey, baseURL, model string) *OpenAIClient {
 }
 
 func (c *OpenAIClient) Generate(prompt string) (string, error) {
+	return c.GenerateWithBatchSize(prompt, 10)
+}
+
+func (c *OpenAIClient) GenerateWithBatchSize(prompt string, batchSize int) (string, error) {
 	if c.client == nil {
 		return "", NewLLmCallError(ClientNotInitialized, nil)
+	}
+
+	baseTimeout := 18 * time.Second
+	timeout := baseTimeout * time.Duration(batchSize)
+	if timeout < 60*time.Second {
+		timeout = 60 * time.Second
+	}
+	if timeout > 600*time.Second {
+		timeout = 600 * time.Second
 	}
 
 	req := openai.ChatCompletionRequest{
@@ -82,7 +99,7 @@ func (c *OpenAIClient) Generate(prompt string) (string, error) {
 		},
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	resp, err := c.client.CreateChatCompletion(ctx, req)
 	if err != nil {
