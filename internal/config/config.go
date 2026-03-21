@@ -36,10 +36,12 @@ func (c *Config) GetBatchConfig() BatchConfig {
 	}
 }
 
+var configFileUsed string
+
 func LoadConfig() {
 	cfg = viper.New()
 	cfg.SetConfigName("default")
-	cfg.AddConfigPath("./config")
+	cfg.AddConfigPath("./configs")
 	cfg.AddConfigPath("$HOME/.config/synthdata")
 	cfg.AddConfigPath("$HOME/.synthdata")
 	if exePath, err := os.Executable(); err == nil {
@@ -58,9 +60,11 @@ func LoadConfig() {
 
 	err := cfg.ReadInConfig()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Config file not found, using defaults: %v\n", err)
+		configFileUsed = ""
+		fmt.Fprintf(os.Stderr, "Config file not found: %v\n", err)
 	} else {
-		fmt.Fprintf(os.Stderr, "Loaded config from: %s\n", cfg.ConfigFileUsed())
+		configFileUsed = cfg.ConfigFileUsed()
+		fmt.Fprintf(os.Stderr, "Loaded config from: %s\n", configFileUsed)
 	}
 }
 
@@ -68,10 +72,31 @@ func GetConfig() *Config {
 	if cfg == nil {
 		LoadConfig()
 	}
+
+	if configFileUsed == "" {
+		fmt.Println("Error: No config file found.")
+		fmt.Println("")
+		fmt.Println("Please create a config file at ./configs/default.toml with the following content:")
+		fmt.Println("")
+		fmt.Println("  [llm]")
+		fmt.Println("  api_key = \"sk-your-api-key-here\"")
+		fmt.Println("  base_url = \"https://api.openai.com/v1\"")
+		fmt.Println("  model = \"gpt-4o-mini\"")
+		fmt.Println("")
+		fmt.Println("  [batch]")
+		fmt.Println("  batch_size = 10")
+		fmt.Println("  concurrency = 5")
+		fmt.Println("  max_retries = 3")
+		fmt.Println("")
+		fmt.Println("Or set the OPENAI_API_KEY environment variable.")
+		os.Exit(1)
+	}
+
 	var c Config
 	err := cfg.Unmarshal(&c)
 	if err != nil {
 		panic(fmt.Errorf("failed to unmarshal config: %w", err))
 	}
+
 	return &c
 }

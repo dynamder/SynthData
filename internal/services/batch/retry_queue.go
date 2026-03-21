@@ -2,8 +2,10 @@ package batch
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	synthdatalog "github.com/dynamder/synthdata/internal"
 	"github.com/dynamder/synthdata/internal/services/llm"
 )
 
@@ -33,9 +35,14 @@ func (r *RetryQueue) Process(ctx context.Context, originalPrompt string, onRecov
 	recovered := 0
 	stillFailed := make([]FailedRecord, 0)
 
-	for retryCount := 0; retryCount < r.maxRetries; retryCount++ {
+	synthdatalog.GetLogger().Info(
+		fmt.Sprintf("Retry with max times %d for %d failed batches.", r.maxRetries, r.FailedCount()),
+		map[string]interface{}{
+			"originalPrompt": originalPrompt,
+		},
+	)
+	fmt.Printf("[Retry] Retry with max times %d for %d failed batches.\n", r.maxRetries, r.FailedCount())
 
-	}
 	for _, failed := range r.queue {
 		if failed.RetryCount >= r.maxRetries {
 			stillFailed = append(stillFailed, failed)
@@ -80,6 +87,13 @@ func (r *RetryQueue) Process(ctx context.Context, originalPrompt string, onRecov
 	}
 
 	r.queue = stillFailed
+
+	synthdatalog.GetLogger().Info(
+		fmt.Sprintf("Retry completed. Recovered %d records, %d still fail", recovered, r.FailedCount()),
+		nil,
+	)
+	fmt.Printf("[Retry] Retry completed. Recovered %d records, %d still fail\n", recovered, r.FailedCount())
+
 	return recovered, nil
 }
 

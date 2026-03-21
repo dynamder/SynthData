@@ -3,6 +3,7 @@ package llm
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/dynamder/synthdata/internal/config"
@@ -53,6 +54,9 @@ func NewOpenAIClientWithConfig(apiKey, baseURL, model string) *OpenAIClient {
 	if baseURL != "" {
 		cfg.BaseURL = baseURL
 	}
+	cfg.HTTPClient = &http.Client{
+		Timeout: 120 * time.Second,
+	}
 	client := openai.NewClientWithConfig(cfg)
 	if model == "" {
 		model = "gpt-4o-mini"
@@ -78,7 +82,7 @@ func (c *OpenAIClient) Generate(prompt string) (string, error) {
 		},
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()
 	resp, err := c.client.CreateChatCompletion(ctx, req)
 	if err != nil {

@@ -136,18 +136,19 @@ func (e *Executor) ExecuteBatches(ctx context.Context, batches []Batch, promptTe
 
 			atomic.AddInt64(&completed, 1)
 			if progressChan != nil {
-				select {
-				case progressChan <- ProgressUpdate{
+				failedCount := 0
+				for _, f := range result.FailedRecords {
+					failedCount += f.RecordCount
+				}
+				progressChan <- ProgressUpdate{
 					BatchID:   result.BatchID,
 					Completed: int(atomic.LoadInt64(&completed)),
 					Total:     len(batches),
 					BatchSize: b.Size,
 					Success:   len(result.SuccessfulRecords),
-					Failed:    len(result.FailedRecords),
+					Failed:    failedCount,
 					LLMCalls:  result.LLMCallCount,
 					Duration:  result.EndTime - result.StartTime,
-				}:
-				default:
 				}
 			}
 

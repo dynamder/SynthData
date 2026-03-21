@@ -71,7 +71,7 @@ func (s *Service) Generate(ctx context.Context, req GenerationRequest) (*Generat
 
 	promptTemplate := s.buildDescPrompt(descFile)
 
-	progressChan := make(chan ProgressUpdate, 10)
+	progressChan := make(chan ProgressUpdate, len(batches))
 	go s.printProgress(progressChan, session)
 
 	results := s.executor.ExecuteBatches(ctx, batches, promptTemplate, progressChan)
@@ -131,6 +131,12 @@ func (s *Service) Generate(ctx context.Context, req GenerationRequest) (*Generat
 }
 
 func (s *Service) processRetries(ctx context.Context, results []BatchResult, originalPrompt string, session *GenerationSession) int {
+	synthdatalog.GetLogger().Info("Start retrying.", map[string]interface{}{
+		"batchResults":   results,
+		"originalPrompt": originalPrompt,
+	})
+	fmt.Println("\n[Retry] Start Retrying...")
+
 	var allFailed []FailedRecord
 	for _, r := range results {
 		allFailed = append(allFailed, r.FailedRecords...)
@@ -149,10 +155,18 @@ func (s *Service) processRetries(ctx context.Context, results []BatchResult, ori
 	})
 
 	for i := range session.BatchResults {
-		if len(session.BatchResults[i].FailedRecords) > 0 {
+		if len(session.BatchResults[i].FailedRecords) > 0 && len(recoveredRecords) > 0 {
+			batchSize := session.BatchResults[i].FailedRecords[0].RecordCount
+			missingCount := batchSize - len(session.BatchResults[i].SuccessfulRecords)
+			toRecover := missingCount
+			if toRecover > len(recoveredRecords) {
+				toRecover = len(recoveredRecords)
+			}
 			session.BatchResults[i].SuccessfulRecords = append(
-				session.BatchResults[i].SuccessfulRecords, recoveredRecords...,
+				session.BatchResults[i].SuccessfulRecords,
+				recoveredRecords[:toRecover]...,
 			)
+			recoveredRecords = recoveredRecords[toRecover:]
 		}
 	}
 
@@ -180,24 +194,24 @@ func (s *Service) printProgress(progressChan chan ProgressUpdate, session *Gener
 
 		cumulativeSuccess += update.Success
 		cumulativeFailed += update.Failed
-		totalValidRecords := cumulativeSuccess
+		totalRecords := cumulativeSuccess + cumulativeFailed
 
 		avgTimePerBatch := float64(elapsed.Milliseconds()) / float64(update.Completed)
 		etaSeconds := avgTimePerBatch * float64(update.Total-update.Completed) / 1000
 
 		if update.Completed > 1 && (update.Completed%5 == 0 || update.Completed == update.Total) {
-			fmt.Printf("\n[Phase Summary] Batch %d/%d (%.1f%%) | Elapsed: %s | Avg: %.1fs/batch | ETA: %.1fs | Records: %d/%d | Success: %d | Failed: %d",
+			fmt.Printf("\n[Phase Summary] Batch %d/%d (%.1f%%) | Elapsed: %s | Avg: %.1fs/batch | ETA: %.1fs | Total: %d/%d | Success: %d | Failed: %d",
 				update.Completed, update.Total, percent,
 				elapsed.Round(time.Second),
 				avgTimePerBatch/1000,
 				etaSeconds,
-				totalValidRecords, session.Request.TargetCount,
+				totalRecords, session.Request.TargetCount,
 				cumulativeSuccess, cumulativeFailed)
 		} else if update.Completed == 1 {
-			fmt.Printf("\n[Phase Summary] Batch %d/%d (%.1f%%) | Elapsed: %s | Records: %d/%d | Success: %d | Failed: %d",
+			fmt.Printf("\n[Phase Summary] Batch %d/%d (%.1f%%) | Elapsed: %s | Total: %d/%d | Success: %d | Failed: %d",
 				update.Completed, update.Total, percent,
 				elapsed.Round(time.Second),
-				totalValidRecords, session.Request.TargetCount,
+				totalRecords, session.Request.TargetCount,
 				cumulativeSuccess, cumulativeFailed)
 		}
 	}

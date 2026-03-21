@@ -42,7 +42,7 @@ func init() {
 	GenerateCmd.Flags().StringVarP(&logDir, "log", "l", "log/", "Directory to hold logs")
 	GenerateCmd.Flags().StringVarP(&dataFormat, "format", "f", "json", "Output format: json, csv")
 	GenerateCmd.Flags().IntVarP(&scale, "scale", "s", 10, "Number of records to generate")
-	GenerateCmd.Flags().StringVarP(&configFile, "config", "c", "", "Config file path")
+	GenerateCmd.Flags().StringVarP(&configFile, "config", "c", "configs/default.toml", "Config file path")
 	GenerateCmd.Flags().BoolVarP(&force, "force", "", false, "Overwrite existing output file")
 	GenerateCmd.Flags().IntVarP(&batchSize, "batch-size", "", 10, "Number of records per batch (for large scale generation)")
 	GenerateCmd.Flags().IntVarP(&concurrency, "concurrency", "", 5, "Maximum parallel LLM calls")
