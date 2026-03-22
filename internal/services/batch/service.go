@@ -108,6 +108,24 @@ func (s *Service) Generate(ctx context.Context, req GenerationRequest) (*Generat
 		return session, fmt.Errorf("failed to write output: %w", err)
 	}
 
+	if session.TotalRecords == 0 && session.FailedRecords > 0 {
+		var firstErr error
+		for _, r := range session.BatchResults {
+			for _, failed := range r.FailedRecords {
+				if failed.Error != nil {
+					firstErr = failed.Error
+					break
+				}
+			}
+			if firstErr != nil {
+				break
+			}
+		}
+		if firstErr != nil {
+			return session, fmt.Errorf("generation failed: all records failed due to LLM errors: %w", firstErr)
+		}
+	}
+
 	elapsed := time.Duration(session.EndTime-session.StartTime) * time.Millisecond
 	failedBatches := 0
 	for _, r := range session.BatchResults {

@@ -35,12 +35,12 @@ description: "Task list for Interactive CLI Wizard feature implementation"
 
 **Purpose**: Create the core prompt module that all user stories depend on
 
-- [ ] T001 [P] Create internal/cli/prompt/session.go with PromptSession struct and Run method
-- [ ] T002 [P] Create internal/cli/prompt/metadata.go with ArgumentMetadata struct
-- [ ] T003 [P] Create internal/cli/prompt/validator.go with ValidationResult struct and validation logic
-- [ ] T004 [P] Create internal/cli/prompt/prompter.go with buildPrompt function
-- [ ] T005 Add -i, --interactive flag to GenerateCmd in internal/cli/generate.go
-- [ ] T006 Wire interactive mode in runGenerate function to check -i flag and enter prompt session
+- [X] T001 [P] Create internal/cli/prompt/session.go with PromptSession struct and Run method
+- [X] T002 [P] Create internal/cli/prompt/metadata.go with ArgumentMetadata struct
+- [X] T003 [P] Create internal/cli/prompt/validator.go with ValidationResult struct and validation logic
+- [X] T004 [P] Create internal/cli/prompt/prompter.go with buildPrompt function
+- [X] T005 Add -i, --interactive flag to GenerateCmd in internal/cli/generate.go
+- [X] T006 Wire interactive mode in runGenerate function to check -i flag and enter prompt session
 
 **Checkpoint**: Core prompt infrastructure ready - user story implementation can now begin
 
@@ -54,12 +54,12 @@ description: "Task list for Interactive CLI Wizard feature implementation"
 
 ### Implementation for User Story 1
 
-- [ ] T007 [P] [US1] Implement PromptSession.Run to iterate through required arguments in internal/cli/prompt/session.go
-- [ ] T008 [P] [US1] Implement argument metadata extraction from cobra flags in internal/cli/prompt/metadata.go
-- [ ] T009 [US1] Display clear prompts with argument name, description, and example in internal/cli/prompt/prompter.go
-- [ ] T010 [US1] Collect user input using bufio.Scanner in internal/cli/prompt/session.go
-- [ ] T011 [US1] Store collected arguments and pass to command execution in internal/cli/prompt/session.go
-- [ ] T012 [US1] Handle explicit arguments passed alongside -i flag to skip their prompts
+- [X] T007 [P] [US1] Implement PromptSession.Run to iterate through required arguments in internal/cli/prompt/session.go
+- [X] T008 [P] [US1] Implement argument metadata extraction from cobra flags in internal/cli/prompt/metadata.go
+- [X] T009 [US1] Display clear prompts with argument name, description, and example in internal/cli/prompt/prompter.go
+- [X] T010 [US1] Collect user input using bufio.Scanner in internal/cli/prompt/session.go
+- [X] T011 [US1] Store collected arguments and pass to command execution in internal/cli/prompt/session.go
+- [X] T012 [US1] Handle explicit arguments passed alongside -i flag to skip their prompts
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - users can run `synthdata generate -i` and be prompted for each argument
 
@@ -73,13 +73,13 @@ description: "Task list for Interactive CLI Wizard feature implementation"
 
 ### Implementation for User Story 2
 
-- [ ] T013 [P] [US2] Implement input validation for string type arguments in internal/cli/prompt/validator.go
-- [ ] T014 [P] [US2] Implement input validation for int type arguments in internal/cli/prompt/validator.go
-- [ ] T015 [P] [US2] Implement input validation for bool type arguments in internal/cli/prompt/validator.go
-- [ ] T016 [US2] Implement enumerated/valid values validation in internal/cli/prompt/validator.go
-- [ ] T017 [US2] Display validation error messages and re-prompt on invalid input in internal/cli/prompt/session.go
-- [ ] T018 [US2] Add help keyword (? or help) handling to show argument details in internal/cli/prompt/prompter.go
-- [ ] T019 [US2] Implement re-prompt loop until valid input or cancellation in internal/cli/prompt/session.go
+- [X] T013 [P] [US2] Implement input validation for string type arguments in internal/cli/prompt/validator.go
+- [X] T014 [P] [US2] Implement input validation for int type arguments in internal/cli/prompt/validator.go
+- [X] T015 [P] [US2] Implement input validation for bool type arguments in internal/cli/prompt/validator.go
+- [X] T016 [US2] Implement enumerated/valid values validation in internal/cli/prompt/validator.go
+- [X] T017 [US2] Display validation error messages and re-prompt on invalid input in internal/cli/prompt/session.go
+- [X] T018 [US2] Add help keyword (? or help) handling to show argument details in internal/cli/prompt/prompter.go
+- [X] T019 [US2] Implement re-prompt loop until valid input or cancellation in internal/cli/prompt/session.go
 
 **Checkpoint**: User Story 2 complete - validation and help features working
 
@@ -93,10 +93,10 @@ description: "Task list for Interactive CLI Wizard feature implementation"
 
 ### Implementation for User Story 3
 
-- [ ] T020 [P] [US3] Detect optional arguments vs required in internal/cli/prompt/metadata.go
-- [ ] T021 [P] [US3] Display default value in prompt for optional arguments in internal/cli/prompt/prompter.go
-- [ ] T022 [US3] Implement empty input handling: use default for optional with default, skip for optional without default in internal/cli/prompt/session.go
-- [ ] T023 [US3] Implement required argument handling: re-prompt if empty in internal/cli/prompt/session.go
+- [X] T020 [P] [US3] Detect optional arguments vs required in internal/cli/prompt/metadata.go
+- [X] T021 [P] [US3] Display default value in prompt for optional arguments in internal/cli/prompt/prompter.go
+- [X] T022 [US3] Implement empty input handling: use default for optional with default, skip for optional without default in internal/cli/prompt/session.go
+- [X] T023 [US3] Implement required argument handling: re-prompt if empty in internal/cli/prompt/session.go
 
 **Checkpoint**: All user stories complete - interactive CLI wizard fully functional
 
@@ -106,8 +106,8 @@ description: "Task list for Interactive CLI Wizard feature implementation"
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T024 [P] Add graceful Ctrl+C handling with clean exit message in internal/cli/prompt/session.go
-- [ ] T025 [P] Add progress indication showing current argument position in internal/cli/prompt/prompter.go
+- [X] T024 [P] Add graceful Ctrl+C handling with clean exit message in internal/cli/prompt/session.go
+- [X] T025 [P] Add progress indication showing current argument position in internal/cli/prompt/prompter.go
 - [ ] T026 Run quickstart.md validation to ensure documented behavior matches implementation
 - [ ] T027 Update README or documentation with -i flag usage if needed
 

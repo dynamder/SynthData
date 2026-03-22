@@ -38,6 +38,9 @@ type LLMCallError struct {
 }
 
 func (error *LLMCallError) Error() string {
+	if error.Detail != nil {
+		return fmt.Sprintf("LLM Call failed: %s, Detail: %v", errorCodeMap[error.ErrorCode], error.Detail)
+	}
 	return fmt.Sprintf("LLM Call failed: %s", errorCodeMap[error.ErrorCode])
 }
 
