@@ -48,4 +48,12 @@ nul
 
 /config
 
+# Tooling
 .opencode/
+.specify/
+
+# Build
+build/
+
+# Config with secrets
+configs/default.toml
