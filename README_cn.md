@@ -2,7 +2,7 @@
 
 基于大语言模型（LLM）的合成数据集生成工具。
 
-[English Version](./README_en.md)
+[English Version](./README.md)
 
 ## 概述
 
